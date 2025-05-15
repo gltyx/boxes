@@ -1,0 +1,464 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="BOXES" property="og:title">
+    <meta content="It is always too late to refactor." property="og:description">
+    <!-- <meta content="https://clawrez.gay/games/boxes" property="og:url"> -->
+    <!-- <meta content="https://clawrez.gay/img/BOXES thumbnail.png" property="og:image"> -->
+    <meta content="#000000" data-react-helmet="true" name="theme-color">
+    <meta name="keywords" content="clawrez, milo, fox, dog, puppy, incremental, boxes, game">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="styles.css?ver=3">
+    <title>BOXES</title>
+</head>
+
+<body>
+<script src="chs.js"></script>
+<script src="core.js"></script>
+    <div id="finish-window">
+        <div>
+            Congratulations. You have completed BOXES. I hope you enjoyed each box equally.
+        </div>
+        <div id="restart-button" onclick="replayGame()">
+            Replay with a 2x multiplier to every currency
+        </div>
+        <div id="current-replay-multi">
+            Current replay multiplier: 1x
+        </div>
+    </div>
+    <div id="app">
+
+        <div id="menu-bar">
+            <div class="menu-row">
+                <div class="menu-item" onclick="lineBreaks()">
+                    Dividers
+                </div>
+                <a href="https://discord.gg/GwvYGnsmtN" target="_blank">
+                    <div class="menu-item">
+                        Discord
+                    </div>
+                </a>
+                <a href="https://clawrez.gay/" target="_blank">
+                    <div class="menu-item">
+                        Website
+                    </div>
+                </a>
+            </div>
+            <div class="menu-row">
+                <div class="menu-item" onclick="save()">
+                    Save
+                </div>
+                <div class="menu-item" onclick="exportSave()">
+                    Export
+                </div>
+                <div class="menu-item" onclick="importSave()">
+                    Import
+                </div>
+                <div class="menu-item" id="reset-save" onclick="hardReset()">
+                    Reset
+                </div>
+            </div>
+
+        </div>
+        <div class="box currency" id="box-0">
+            <div class="box-id">#0</div>
+            <div class="currency-title">
+                Flux
+            </div>
+            <div class="currency-value" id="flux-value">
+                0
+            </div>
+            <div class="currency-rate">
+                (<span id="flux-rate">0</span>/s)
+            </div>
+            <div class="buy-max hidden" id="flux-buy-max" onclick="buyMaxFlux()">
+                Buy Max
+            </div>
+        </div>
+        <div class="box upgrade" id="box-1" onclick="buyUpgrade(0)">
+            <div class="box-id">#1</div>
+            <div class="upgrade-level">
+                [Level <span id="upgrade-level-0">0</span> / 1,000]
+            </div>
+            <div class="upgrade-desc">
+                Boost flux generation by <span id="upgrade-base-0">2</span>x.
+            </div>
+            <div class="upgrade-effect">
+                Currently <span id="upgrade-effect-0">1</span>x
+            </div>
+            <div class="upgrade-cost" id="upgrade-maxed-0">
+                Costs <span id="upgrade-cost-0">10</span> Flux
+            </div>
+        </div>
+        <div class="box upgrade" id="box-2" onclick="buyUpgrade(1)">
+            <div class="box-id">#2</div>
+            <div class="upgrade-level">
+                [Level <span id="upgrade-level-1">0</span> / 1,000]
+            </div>
+            <div class="upgrade-desc">
+                Add <span id="upgrade-base-1">0.5</span> to the base of #1.
+            </div>
+            <div class="upgrade-effect">
+                Currently +<span id="upgrade-effect-1">0</span>
+            </div>
+            <div class="upgrade-cost" id="upgrade-maxed-1">
+                Costs <span id="upgrade-cost-1">100</span> Flux
+            </div>
+        </div>
+        <div class="box upgrade" id="box-3" onclick="buyUpgrade(2)">
+            <div class="box-id">#3</div>
+            <div class="upgrade-level">
+                [Level <span id="upgrade-level-2">0</span> / 1,000]
+            </div>
+            <div class="upgrade-desc">
+                Add <span id="upgrade-base-2">1</span> to the base of flux gain.
+            </div>
+            <div class="upgrade-effect">
+                Currently +<span id="upgrade-effect-2">0</span>
+            </div>
+            <div class="upgrade-cost" id="upgrade-maxed-2">
+                Costs <span id="upgrade-cost-2">500</span> Flux
+            </div>
+        </div>
+        <div class="breaker">
+
+        </div>
+        <div class="box currency aura-box hidden" id="box-4">
+            <div class="box-id">#4</div>
+            <div class="currency-title">
+                Aura
+            </div>
+            <div class="currency-value" id="aura-value">
+                0
+            </div>
+            <div class="currency-rate">
+                (<span id="aura-rate">0</span>/s)
+            </div>
+            <div class="buy-max hidden" id="aura-buy-max" onclick="buyMaxAura()">
+                Buy Max
+            </div>
+        </div>
+        <div class="box prestige aura-box hidden" id="box-5" onclick="auraPrestige(`aura`)">
+            <div class="box-id">#5</div>
+            <div class="prestige-name">
+                Aural Prestige
+            </div>
+            <div class="prestige-desc">
+                Reset #0-#3 and get aura based on your flux.
+            </div>
+            <div class="prestige-gain">
+                Gain <span id="aura-prestige-gain">0</span> Aura
+            </div>
+        </div>
+        <div class="box aura-box upgrade hidden" id="box-6" onclick="buyAuraUpgrade(0)">
+            <div class="box-id">#6</div>
+            <div class="upgrade-level">
+                [Level <span id="aura-upgrade-level-0">0</span>]
+            </div>
+            <div class="upgrade-desc">
+                Boost flux generation by <span id="aura-upgrade-base-0">1</span>x.
+            </div>
+            <div class="upgrade-effect">
+                Currently <span id="aura-upgrade-effect-0">0</span>x
+            </div>
+            <div class="upgrade-cost">
+                Costs <span id="aura-upgrade-cost-0">1</span> Aura
+            </div>
+        </div>
+        <div class="box aura-box upgrade hidden" id="box-7" onclick="buyAuraUpgrade(1)">
+            <div class="box-id">#7</div>
+            <div class="upgrade-level">
+                [Level <span id="aura-upgrade-level-1">0</span> / 5]
+            </div>
+            <div class="upgrade-desc">
+                Divide #1-#3 cost scaling by <span id="aura-upgrade-base-1">1.05</span>.
+            </div>
+            <div class="upgrade-effect">
+                Currently /<span id="aura-upgrade-effect-1">1</span>
+            </div>
+            <div class="upgrade-cost" id="aura-maxed-1">
+                Costs <span id="aura-upgrade-cost-1">1</span> Aura
+            </div>
+        </div>
+        <div class="box aura-box upgrade hidden" id="box-8" onclick="buyAuraUpgrade(2)">
+            <div class="box-id">#8</div>
+            <div class="upgrade-level">
+                [Level <span id="aura-upgrade-level-2">0</span> / 1]
+            </div>
+            <div class="upgrade-desc">
+                Multiply flux gain by aura.
+            </div>
+            <div class="upgrade-effect">
+                Currently <span id="aura-upgrade-effect-2">1</span>x
+            </div>
+            <div class="upgrade-cost" id="aura-maxed-2">
+                Costs <span id="aura-upgrade-cost-2">1000</span> Aura
+            </div>
+        </div>
+        <div class="box aura-box upgrade hidden" id="box-9" onclick="buyAuraUpgrade(3)">
+            <div class="box-id">#9</div>
+            <div class="upgrade-level">
+                [Level <span id="aura-upgrade-level-3">0</span> / 1]
+            </div>
+            <div class="upgrade-desc">
+                Unlock exponentia, permanently.
+            </div>
+            <div class="upgrade-cost" id="aura-maxed-3">
+                Costs <span id="aura-upgrade-cost-3">1e20</span> Aura
+            </div>
+        </div>
+        <div class="box aura-box upgrade hidden" id="box-10" onclick="buyAuraUpgrade(4)">
+            <div class="box-id">#10</div>
+            <div class="upgrade-level">
+                [Level <span id="aura-upgrade-level-4">0</span> / 1]
+            </div>
+            <div class="upgrade-desc">
+                Automate #1-#3 and keep them on Aural Prestige, permanently.
+            </div>
+            <div class="upgrade-cost" id="aura-maxed-4">
+                Costs <span id="aura-upgrade-cost-4">1e50</span> Aura
+            </div>
+        </div>
+        <div class="breaker">
+
+        </div>
+        <div class="box currency exponentia-box hidden" id="box-11">
+            <div class="box-id">#11</div>
+            <div class="currency-title">
+                Exponentia
+            </div>
+            <div class="currency-value" id="exponentia-value">
+                0
+            </div>
+            <div class="currency-rate" id="exponentia-currency-rate">
+                (Exponentia^<span id="exponentia-rate">1.001</span>/s)
+            </div>
+            <div class="capped hidden" id="exponentia-capped">
+                CAPPED
+            </div>
+        </div>
+        <div class="box exponentia-box upgrade hidden" id="box-12" onclick="buyExponentiaUpgrade(0)">
+            <div class="box-id">#12</div>
+            <div class="upgrade-level">
+                [Level <span id="exponentia-upgrade-level-0">0</span> / <span id="exponentia-tmax-level-0">0</span>]
+            </div>
+            <div class="upgrade-desc">
+                Multiply the exponentia cap by <span id="exponentia-upgrade-base-0">1e100</span>.
+            </div>
+            <div class="upgrade-effect">
+                Currently <span id="exponentia-upgrade-effect-0">1</span>x
+            </div>
+            <div class="upgrade-cost" id="exponentia-maxed-0">
+                Requires <span id="exponentia-upgrade-cost-0">1e1000</span> Exponentia
+            </div>
+            <!-- fixing numbers -->
+        </div>
+        <div class="box exponentia-box upgrade hidden" id="box-13" onclick="buyExponentiaUpgrade(1)">
+            <div class="box-id">#13</div>
+            <div class="upgrade-level">
+                [Level <span id="exponentia-upgrade-level-1">0</span>]
+            </div>
+            <div class="upgrade-desc">
+                Add to exponentia's exponent by <span id="exponentia-upgrade-base-1">0.001</span>.
+            </div>
+            <div class="upgrade-effect">
+                Currently +<span id="exponentia-upgrade-effect-1">1</span>
+            </div>
+            <div class="upgrade-cost" id="exponentia-maxed-1">
+                Requires <span id="exponentia-upgrade-cost-1">1e50</span> Exponentia
+            </div>
+        </div>
+        <div class="box exponentia-box upgrade hidden" id="box-14" onclick="buyExponentiaUpgrade(2)">
+            <div class="box-id">#14</div>
+            <div class="upgrade-level">
+                [Level <span id="exponentia-upgrade-level-2">0</span> / 4]
+            </div>
+            <div class="upgrade-desc">
+                Add <span id="exponentia-upgrade-base-2">0.01</span> to the exponent of #3's effect.
+            </div>
+            <div class="upgrade-effect">
+                Currently ^<span id="exponentia-upgrade-effect-2">1</span>
+            </div>
+            <div class="upgrade-cost" id="exponentia-maxed-2">
+                Requires <span id="exponentia-upgrade-cost-2">1e100</span> Exponentia
+            </div>
+        </div>
+        <div class="box exponentia-box upgrade hidden" id="box-15" onclick="buyExponentiaUpgrade(3)">
+            <div class="box-id">#15</div>
+            <div class="upgrade-level">
+                [Level <span id="exponentia-upgrade-level-3">0</span> / 4]
+            </div>
+            <div class="upgrade-desc">
+                Add <span id="exponentia-upgrade-base-3">0.1</span> to the exponent of flux gain.
+            </div>
+            <div class="upgrade-effect">
+                Currently ^<span id="exponentia-upgrade-effect-3">1</span>
+            </div>
+            <div class="upgrade-cost" id="exponentia-maxed-3">
+                Requires <span id="exponentia-upgrade-cost-3">1e300</span> Exponentia
+            </div>
+        </div>
+        <div class="box exponentia-box upgrade hidden" id="box-16" onclick="buyExponentiaUpgrade(4)">
+            <div class="box-id">#16</div>
+            <div class="upgrade-level">
+                [Level <span id="exponentia-upgrade-level-4">0</span> / 1]
+            </div>
+            <div class="upgrade-desc">
+                Get 100% of your aura gain per second, permanently.
+            </div>
+            <div class="upgrade-cost" id="exponentia-maxed-4">
+                Requires <span id="exponentia-upgrade-cost-4">1e1200</span> Exponentia
+            </div>
+        </div>
+        <div class="box exponentia-box upgrade hidden" id="box-17" onclick="buyExponentiaUpgrade(5)">
+            <div class="box-id">#17</div>
+            <div class="upgrade-level">
+                [Level <span id="exponentia-upgrade-level-5">0</span> / 1]
+            </div>
+            <div class="upgrade-desc">
+                Permanently set exponentia cap to 10^^307.
+            </div>
+            <div class="upgrade-cost" id="exponentia-maxed-5">
+                Requires <span id="exponentia-upgrade-cost-5">1e2000</span> Exponentia
+            </div>
+        </div>
+        <div class="breaker">
+
+        </div>
+        <div class="box currency consonance-box hidden" id="box-18">
+            <div class="box-id">#18</div>
+            <div class="currency-title">
+                Consonance
+            </div>
+            <div class="currency-value" id="consonance-value">
+                0
+            </div>
+            <div class="currency-rate">
+                (<span id="consonance-rate">0</span>/s)
+            </div>
+        </div>
+        <div class="box prestige consonance-box hidden" id="box-19" onclick="consonancePrestige(`aura`)">
+            <div class="box-id">#19</div>
+            <div class="prestige-name">
+                Consonance Wish
+            </div>
+            <div class="prestige-desc">
+                Reset #0-#17 and get consonance based on your aura.
+            </div>
+            <div class="prestige-gain">
+                Gain <span id="consonance-prestige-gain">0</span> Consonance
+            </div>
+        </div>
+        <div class="box consonance-box upgrade hidden" id="box-20" onclick="buyConsonanceUpgrade(0)">
+            <div class="box-id">#20</div>
+            <div class="upgrade-level">
+                [Level <span id="consonance-upgrade-level-0">0</span> / 5]
+            </div>
+            <div class="upgrade-desc">
+                Multiply flux and aura gain by <span id="consonance-upgrade-base-0">100</span>.
+            </div>
+            <div class="upgrade-effect">
+                Currently <span id="consonance-upgrade-effect-0">1</span>x
+            </div>
+            <div class="upgrade-cost" id="consonance-maxed-0">
+                Costs <span id="consonance-upgrade-cost-0">1</span> Consonance
+            </div>
+        </div>
+        <div class="box consonance-box upgrade hidden" id="box-21" onclick="buyConsonanceUpgrade(1)">
+            <div class="box-id">#21</div>
+            <div class="upgrade-level">
+                [Level <span id="consonance-upgrade-level-1">0</span> / 1]
+            </div>
+            <div class="upgrade-desc">
+                Boost exponentia's exponent based on aura, at a reduced rate.
+            </div>
+            <div class="upgrade-effect">
+                Currently <span id="consonance-upgrade-effect-1">1</span>x
+            </div>
+            <div class="upgrade-cost" id="consonance-maxed-1">
+                Costs <span id="consonance-upgrade-cost-1">1</span> Consonance
+            </div>
+        </div>
+        <div class="box consonance-box upgrade hidden" id="box-22" onclick="buyConsonanceUpgrade(2)">
+            <div class="box-id">#22</div>
+            <div class="upgrade-level">
+                [Level <span id="consonance-upgrade-level-2">0</span> / 5]
+            </div>
+            <div class="upgrade-desc">
+                Increase the maximum level of #12 by <span id="consonance-upgrade-base-2">1</span>.
+            </div>
+            <div class="upgrade-effect">
+                Currently +<span id="consonance-upgrade-effect-2">0</span>
+            </div>
+            <div class="upgrade-cost" id="consonance-maxed-2">
+                Costs <span id="consonance-upgrade-cost-2">5</span> Consonance
+            </div>
+        </div>
+        <div class="box consonance-box upgrade hidden" id="box-23" onclick="buyConsonanceUpgrade(3)">
+            <div class="box-id">#23</div>
+            <div class="upgrade-level">
+                [Level <span id="consonance-upgrade-level-3">0</span> / 1]
+            </div>
+            <div class="upgrade-desc">
+                Boost flux gain based on exponentia, at a reduced rate.
+            </div>
+            <div class="upgrade-effect">
+                Currently <span id="consonance-upgrade-effect-3">1</span>x
+            </div>
+            <div class="upgrade-cost" id="consonance-maxed-3">
+                Costs <span id="consonance-upgrade-cost-3">5</span> Consonance
+            </div>
+        </div>
+        <div class="box consonance-box upgrade hidden" id="box-24" onclick="finishGame()">
+            <div class="box-id">#24</div>
+            <div class="upgrade-level">
+                [Level <span id="consonance-upgrade-level-4">0</span> / 1]
+            </div>
+            <div class="upgrade-desc">
+                Complete BOXES.
+            </div>
+            <div class="upgrade-cost" id="consonance-maxed-4">
+                Costs <span id="consonance-upgrade-cost-4">1e40,000</span> Consonance
+            </div>
+        </div>
+    </div>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="css2.css"
+        rel="stylesheet">
+
+    <script src="js/bemin.js?ver=3"></script>
+    <script src="js/notation.js?ver=3"></script>
+    <script src="js/save.js?ver=5"></script>
+    <script src="js/upgrades.js?ver=3"></script>
+    <script src="js/prestige.js?ver=3"></script>
+    <script src="js/update.js?ver=3"></script>
+    <script src="js/ui.js?ver=3"></script>
+    <script src="js/options.js?ver=3"></script>
+
+    <script>
+        load();
+    </script>
+<!--客服 开始-->
+<script src="//g8hh.github.io/static/js/jquery.min.js"></script>
+<link rel="stylesheet" href="//g8hh.github.io/static/css/kf.css" type="text/css" media="screen" charset="utf-8">
+<script src="//g8hh.github.io/static/js/kf.js"></script>
+<!-- 客服 结束 -->
+<!--站长统计-->
+    <div style="display: none">
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?6581389daf4dd6fe7dbb4d20fdcb52a6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+    </div>
+</body>
+
+</html>
